@@ -314,6 +314,7 @@ function getTaskContext() {
     const params = taskState?.params || question?.params || taskState?.attempt?.params || readFirstValue(['[name="params"]', '[data-params]']) || null;
     const ssid = question?.subskill?.ssid || taskState?.ssid || null;
     const oneId = getOneId(taskState, question);
+    const isExam = !!(question?.isExamBoard || question?.isExam || question?.isExamQuestion);
     const qnumAttr = document.querySelector('[data-qnum]')?.getAttribute('data-qnum');
     const aaidAttr = document.querySelector('[data-aaid]')?.getAttribute('data-aaid');
     const url = new URL(window.location.href);
@@ -327,6 +328,7 @@ function getTaskContext() {
         params,
         ssid,
         oneId,
+        isExam,
         qnum,
         aaid,
         referrer
@@ -401,42 +403,63 @@ async function fetchAnswer() {
             uiLog('Task state or question not found. This must run on an active question page.');
             throw new Error('Task state missing');
         }
-
-        if (!ctx.params) {
-            uiLog('Task params not found. This question type requires params in the submit payload.');
-            throw new Error('Params missing');
+        // If this is an exam question, there are no params/ssid/one_id; use qid instead.
+        let payload;
+        if (ctx.isExam) {
+            if (!ctx.question?.qid) {
+                uiLog('Exam question detected but qid missing');
+                throw new Error('qid missing for exam question');
+            }
+            payload = {
+                userAnswer: '1',
+                qid: ctx.question.qid
+            };
+            if (ctx.qnum) payload.qnum = ctx.qnum;
+            if (ctx.aaid) payload.aaid = ctx.aaid;
+            if (ctx.ssid) payload.ssid = ctx.ssid;
+            if (ctx.params) payload.params = ctx.params;
+            if (ctx.question) payload.question = ctx.question;
+        } else {
+            if (!ctx.params) {
+                uiLog('Task params not found. This question type requires params in the submit payload.');
+                throw new Error('Params missing');
+            }
+            if (ctx.ssid && !ctx.oneId) {
+                uiLog('one_id not found. This question type requires one_id when ssid is present.');
+                throw new Error('one_id missing');
+            }
+            // 1. Payload (userAnswer set to "1" as preview)
+            payload = {
+                userAnswer: '1',
+                params: ctx.params,
+                ssid: ctx.ssid,
+                one_id: ctx.oneId
+            };
         }
-
-        if (ctx.ssid && !ctx.oneId) {
-            uiLog('one_id not found. This question type requires one_id when ssid is present.');
-            throw new Error('one_id missing');
-        }
-
-        // 1. Payload (userAnswer set to "1" as preview)
-        const payload = {
-            userAnswer: '1',
-            params: ctx.params,
-            ssid: ctx.ssid,
-            one_id: ctx.oneId,
-            question: ctx.question
-        };
 
         uiLog('Sending preview request...');
+        uiLog('Preview payload:', JSON.stringify(payload));
 
         // 2. Make the fetch request to the server
         const response = await fetch('https://www.drfrost.org/api/tasks/submitanswer', {
             method: 'POST',
             headers: {
                 accept: 'application/json, text/javascript, */*; q=0.01',
-                'content-type': 'text/plain;charset=UTF-8',
                 'x-requested-with': 'XMLHttpRequest'
             },
-            referrer: 'https://www.drfrost.org/worksheets.php?wid=new',
+            referrer: ctx.referrer,
             body: JSON.stringify(payload),
             credentials: 'include'
         });
 
         if (!response.ok) {
+            let bodyText = '';
+            try {
+                bodyText = await response.text();
+            } catch (e) {
+                bodyText = '<unable to read body>'; 
+            }
+            uiLog('Preview request failed:', response.status, bodyText);
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
@@ -526,12 +549,17 @@ async function submitAnswer() {
             return null;
         }
 
+        // Validate required fields. Exam questions use `qid` instead of params/ssid/one_id.
         const missing = [];
-        if (!ctx.aaid) missing.push('aaid');
-        if (!ctx.qnum) missing.push('qnum');
-        if (!ctx.ssid) missing.push('ssid');
-        if (!ctx.params) missing.push('params');
-        if (ctx.ssid && !ctx.oneId) missing.push('one_id');
+        if (ctx.isExam) {
+            if (!ctx.question?.qid) missing.push('qid');
+        } else {
+            if (!ctx.aaid) missing.push('aaid');
+            if (!ctx.qnum) missing.push('qnum');
+            if (!ctx.ssid) missing.push('ssid');
+            if (!ctx.params) missing.push('params');
+            if (ctx.ssid && !ctx.oneId) missing.push('one_id');
+        }
 
         if (missing.length > 0) {
             uiLog('Unable to submit: missing', missing.join(', '));
@@ -539,29 +567,45 @@ async function submitAnswer() {
         }
 
         const userAnswer = normalizeUserAnswer(lastAnswerRaw);
-        const payload = {
-            userAnswer,
-            qnum: ctx.qnum,
-            aaid: ctx.aaid,
-            ssid: ctx.ssid,
-            params: ctx.params,
-            one_id: ctx.oneId
-        };
+        let payload;
+        if (ctx.isExam) {
+            payload = { userAnswer, qid: ctx.question.qid };
+            if (ctx.qnum) payload.qnum = ctx.qnum;
+            if (ctx.aaid) payload.aaid = ctx.aaid;
+            if (ctx.ssid) payload.ssid = ctx.ssid;
+            if (ctx.params) payload.params = ctx.params;
+            if (ctx.question) payload.question = ctx.question;
+        } else {
+            payload = {
+                userAnswer,
+                qnum: ctx.qnum,
+                aaid: ctx.aaid,
+                ssid: ctx.ssid,
+                params: ctx.params,
+                one_id: ctx.oneId
+            };
+        }
 
         uiLog('Submitting answer...');
+        uiLog('Submit payload:', JSON.stringify(payload));
         const response = await fetch('https://www.drfrost.org/api/tasks/submitanswer', {
             method: 'POST',
             headers: {
                 accept: 'application/json, text/javascript, */*; q=0.01',
-                'content-type': 'text/plain;charset=UTF-8',
                 'x-requested-with': 'XMLHttpRequest'
             },
             referrer: ctx.referrer,
             body: JSON.stringify(payload),
             credentials: 'include'
         });
-
         if (!response.ok) {
+            let bodyText = '';
+            try {
+                bodyText = await response.text();
+            } catch (e) {
+                bodyText = '<unable to read body>';
+            }
+            uiLog('Submit request failed:', response.status, bodyText);
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
