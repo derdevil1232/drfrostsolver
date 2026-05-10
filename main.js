@@ -268,13 +268,52 @@ function normalizeUserAnswer(raw) {
     return raw;
 }
 
+function readFirstValue(selectors) {
+    for (const selector of selectors) {
+        const node = document.querySelector(selector);
+        if (!node) continue;
+
+        if ('value' in node && node.value !== undefined && node.value !== null && node.value !== '') {
+            return node.value;
+        }
+
+        const attrValue = node.getAttribute('value') || node.getAttribute('data-value');
+        if (attrValue !== undefined && attrValue !== null && attrValue !== '') {
+            return attrValue;
+        }
+    }
+
+    return null;
+}
+
+function getOneId(taskState, question) {
+    const directValue =
+        taskState?.one_id ||
+        taskState?.oneId ||
+        taskState?.attempt?.one_id ||
+        taskState?.attempt?.oneId ||
+        question?.one_id ||
+        question?.oneId ||
+        globalContext.one_id ||
+        globalContext.oneId ||
+        readFirstValue([
+            '[name="one_id"]',
+            '[name="oneId"]',
+            '[data-one_id]',
+            '[data-one-id]'
+        ]);
+
+    return directValue === undefined || directValue === null || directValue === '' ? null : directValue;
+}
+
 function getTaskContext() {
     const jq = getJQuery();
     const $taskState = jq ? jq(document).data('taskState') : null;
     const taskState = $taskState || (window.taskState ? window.taskState : null);
     const question = taskState?.question || null;
-    const params = taskState?.params || question?.params || null;
+    const params = taskState?.params || question?.params || taskState?.attempt?.params || readFirstValue(['[name="params"]', '[data-params]']) || null;
     const ssid = question?.subskill?.ssid || taskState?.ssid || null;
+    const oneId = getOneId(taskState, question);
     const qnumAttr = document.querySelector('[data-qnum]')?.getAttribute('data-qnum');
     const aaidAttr = document.querySelector('[data-aaid]')?.getAttribute('data-aaid');
     const url = new URL(window.location.href);
@@ -287,6 +326,7 @@ function getTaskContext() {
         question,
         params,
         ssid,
+        oneId,
         qnum,
         aaid,
         referrer
@@ -355,29 +395,35 @@ async function fetchAnswer() {
     try {
         uiLog('Attempting to fetch answer...');
 
-        // 1. Dynamically fetch the current question data from the page's state
-        const jq = getJQuery();
-        const $taskState = jq ? jq(document).data('taskState') : null;
-        const taskState = $taskState || (window.taskState ? window.taskState : null);
+        const ctx = getTaskContext();
 
-        if (!taskState || !taskState.question) {
+        if (!ctx.taskState || !ctx.question) {
             uiLog('Task state or question not found. This must run on an active question page.');
             throw new Error('Task state missing');
         }
 
-        const questionObj = taskState.question;
+        if (!ctx.params) {
+            uiLog('Task params not found. This question type requires params in the submit payload.');
+            throw new Error('Params missing');
+        }
 
-        // 2. Payload (userAnswer set to "1" as preview)
+        if (ctx.ssid && !ctx.oneId) {
+            uiLog('one_id not found. This question type requires one_id when ssid is present.');
+            throw new Error('one_id missing');
+        }
+
+        // 1. Payload (userAnswer set to "1" as preview)
         const payload = {
             userAnswer: '1',
-            params: questionObj.params,
-            ssid: questionObj.subskill ? questionObj.subskill.ssid : undefined,
-            question: questionObj
+            params: ctx.params,
+            ssid: ctx.ssid,
+            one_id: ctx.oneId,
+            question: ctx.question
         };
 
         uiLog('Sending preview request...');
 
-        // 3. Make the fetch request to the server
+        // 2. Make the fetch request to the server
         const response = await fetch('https://www.drfrost.org/api/tasks/submitanswer', {
             method: 'POST',
             headers: {
@@ -485,6 +531,7 @@ async function submitAnswer() {
         if (!ctx.qnum) missing.push('qnum');
         if (!ctx.ssid) missing.push('ssid');
         if (!ctx.params) missing.push('params');
+        if (ctx.ssid && !ctx.oneId) missing.push('one_id');
 
         if (missing.length > 0) {
             uiLog('Unable to submit: missing', missing.join(', '));
@@ -497,7 +544,8 @@ async function submitAnswer() {
             qnum: ctx.qnum,
             aaid: ctx.aaid,
             ssid: ctx.ssid,
-            params: ctx.params
+            params: ctx.params,
+            one_id: ctx.oneId
         };
 
         uiLog('Submitting answer...');
