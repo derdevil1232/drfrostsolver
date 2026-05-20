@@ -47,32 +47,25 @@ function injectStyles() {
     const style = document.createElement('style');
     style.id = UI_IDS.style;
     style.textContent = `
-#${UI_IDS.root}{position:fixed;top:16px;right:16px;width:min(360px,92vw);z-index:99999;font-family:"Lexend","Segoe UI",sans-serif;color:#000000;--dfs-text:#000000;--dfs-button:#abdc13;--dfs-button-text:#ffffff;--dfs-green:#2c5857;--dfs-green-dark:#1f3d3c;--dfs-green-soft:#3c6867;--dfs-lime:#A9D18E;--dfs-border:#d7e0df;--dfs-bg:#ffffff;--dfs-bg-soft:#f4f8f7;--dfs-link:#1A73E8;--dfs-shadow:0 14px 30px rgba(17,46,45,0.25)}
+#${UI_IDS.root}{position:fixed;top:16px;right:16px;width:min(360px,92vw);z-index:99999;font-family:"Space Grotesk","Segoe UI",sans-serif;color:#0f172a}
 #${UI_IDS.root} *{box-sizing:border-box}
-#${UI_IDS.root}{background:linear-gradient(180deg,#ffffff 0%,#f4f8f7 100%);border:1px solid var(--dfs-border);border-radius:12px;overflow:hidden;box-shadow:var(--dfs-shadow)}
-#${UI_IDS.root} .dfs-menu-bar{background:var(--dfs-button);color:var(--dfs-text);padding:8px 10px;border-bottom:1px solid #9fc812;cursor:move;user-select:none;touch-action:none}
-#${UI_IDS.root} .dfs-menu{list-style:none;margin:0;padding:0;display:flex;gap:10px}
-#${UI_IDS.root} .dfs-menu-item{position:relative;padding:4px 8px;border-radius:6px;cursor:default;font-size:12px;text-transform:uppercase;letter-spacing:.6px}
-#${UI_IDS.root} .dfs-menu-item:hover{background:#9fc812}
-#${UI_IDS.root} .dfs-submenu{display:none;position:absolute;left:0;top:100%;background:#ffffff;border:1px solid var(--dfs-border);list-style:none;padding:6px 0;margin:6px 0 0 0;min-width:160px;border-radius:8px;box-shadow:0 10px 18px rgba(17,46,45,0.18);color:var(--dfs-text)}
+#${UI_IDS.root}{background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;box-shadow:0 12px 34px rgba(11,22,45,0.18)}
+#${UI_IDS.root} .dfs-menu-bar{background:linear-gradient(120deg,#fef3c7,#d1fae5);padding:8px 10px;border-bottom:1px solid #e2e8f0;cursor:move;user-select:none;touch-action:none}
+#${UI_IDS.root} .dfs-menu{list-style:none;margin:0;padding:0;display:flex;gap:12px}
+#${UI_IDS.root} .dfs-menu-item{position:relative;padding:4px 8px;cursor:default;font-size:13px}
+#${UI_IDS.root} .dfs-submenu{display:none;position:absolute;left:0;top:100%;background:#ffffff;border:1px solid #e2e8f0;list-style:none;padding:6px 0;margin:6px 0;min-width:140px;border-radius:8px;box-shadow:0 8px 18px rgba(11,22,45,0.12)}
 #${UI_IDS.root} .dfs-menu-item:hover>.dfs-submenu{display:block}
-#${UI_IDS.root} .dfs-submenu li{padding:7px 12px;cursor:pointer;font-size:12px;color:var(--dfs-text)}
-#${UI_IDS.root} .dfs-submenu li:hover{background:#eef4f3}
+#${UI_IDS.root} .dfs-submenu li{padding:6px 10px;cursor:pointer;font-size:12px}
+#${UI_IDS.root} .dfs-submenu li:hover{background:#f1f5f9}
 #${UI_IDS.root} .dfs-content{padding:12px}
-#${UI_IDS.root} .dfs-title{margin:0 0 10px 0;font-size:17px;letter-spacing:.3px;color:var(--dfs-text)}
+#${UI_IDS.root} .dfs-title{margin:0 0 10px 0;font-size:18px;letter-spacing:.2px}
 #${UI_IDS.root} .dfs-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-#${UI_IDS.root} .dfs-btn{background:var(--dfs-button);color:var(--dfs-button-text);border:1px solid var(--dfs-button);padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;transition:background .15s ease,transform .15s ease,box-shadow .15s ease}
-#${UI_IDS.root} .dfs-btn:hover{background:var(--dfs-button);box-shadow:0 6px 12px rgba(44,88,87,0.2)}
-#${UI_IDS.root} .dfs-btn:active{transform:translateY(1px)}
-#${UI_IDS.root} .dfs-btn:disabled{background:var(--dfs-button);border-color:var(--dfs-button);color:var(--dfs-button-text);cursor:not-allowed;box-shadow:none;opacity:0.65}
-#${UI_IDS.root} .dfs-btn-secondary{background:var(--dfs-button);color:var(--dfs-button-text);border:1px solid var(--dfs-button)}
-#${UI_IDS.root} .dfs-btn-secondary:hover{background:var(--dfs-button)}
-#${UI_IDS.root} .dfs-label{font-weight:600;color:var(--dfs-text);font-size:12px;margin-bottom:6px}
-#${UI_IDS.root} .dfs-answer{padding:10px;border:1px solid var(--dfs-border);border-radius:8px;background:#ffffff;min-height:36px;font-size:13px}
-#${UI_IDS.root} .dfs-log{background:#ffffff;color:var(--dfs-text);padding:10px;border-radius:8px;min-height:140px;max-height:200px;overflow:auto;font-size:12px;border:1px solid var(--dfs-border)}
-#${UI_IDS.root} .dfs-log::selection{background:var(--dfs-button);color:var(--dfs-text)}
+#${UI_IDS.root} .dfs-btn{background:#0f766e;color:#ffffff;border:none;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px}
+#${UI_IDS.root} .dfs-btn-secondary{background:#e6f2f1;color:#0f766e}
+#${UI_IDS.root} .dfs-label{font-weight:600;color:#475569;font-size:12px;margin-bottom:6px}
+#${UI_IDS.root} .dfs-answer{padding:10px;border:1px dashed #cbd5f5;border-radius:8px;background:#ffffff;min-height:36px;font-size:13px}
+#${UI_IDS.root} .dfs-log{background:#0f172a;color:#dbeafe;padding:10px;border-radius:8px;min-height:140px;max-height:200px;overflow:auto;font-size:12px}
 #${UI_IDS.root}.dfs-minimized .dfs-content{display:none}
-#${UI_IDS.root}.dfs-minimized{width:min(300px,80vw)}
 `;
     (document.head || document.documentElement).appendChild(style);
 }
@@ -268,53 +261,13 @@ function normalizeUserAnswer(raw) {
     return raw;
 }
 
-function readFirstValue(selectors) {
-    for (const selector of selectors) {
-        const node = document.querySelector(selector);
-        if (!node) continue;
-
-        if ('value' in node && node.value !== undefined && node.value !== null && node.value !== '') {
-            return node.value;
-        }
-
-        const attrValue = node.getAttribute('value') || node.getAttribute('data-value');
-        if (attrValue !== undefined && attrValue !== null && attrValue !== '') {
-            return attrValue;
-        }
-    }
-
-    return null;
-}
-
-function getOneId(taskState, question) {
-    const directValue =
-        taskState?.one_id ||
-        taskState?.oneId ||
-        taskState?.attempt?.one_id ||
-        taskState?.attempt?.oneId ||
-        question?.one_id ||
-        question?.oneId ||
-        globalContext.one_id ||
-        globalContext.oneId ||
-        readFirstValue([
-            '[name="one_id"]',
-            '[name="oneId"]',
-            '[data-one_id]',
-            '[data-one-id]'
-        ]);
-
-    return directValue === undefined || directValue === null || directValue === '' ? null : directValue;
-}
-
 function getTaskContext() {
     const jq = getJQuery();
     const $taskState = jq ? jq(document).data('taskState') : null;
     const taskState = $taskState || (window.taskState ? window.taskState : null);
     const question = taskState?.question || null;
-    const params = taskState?.params || question?.params || taskState?.attempt?.params || readFirstValue(['[name="params"]', '[data-params]']) || null;
+    const params = taskState?.params || question?.params || null;
     const ssid = question?.subskill?.ssid || taskState?.ssid || null;
-    const oneId = getOneId(taskState, question);
-    const isExam = !!(question?.isExamBoard || question?.isExam || question?.isExamQuestion);
     const qnumAttr = document.querySelector('[data-qnum]')?.getAttribute('data-qnum');
     const aaidAttr = document.querySelector('[data-aaid]')?.getAttribute('data-aaid');
     const url = new URL(window.location.href);
@@ -327,8 +280,6 @@ function getTaskContext() {
         question,
         params,
         ssid,
-        oneId,
-        isExam,
         qnum,
         aaid,
         referrer
@@ -397,69 +348,42 @@ async function fetchAnswer() {
     try {
         uiLog('Attempting to fetch answer...');
 
-        const ctx = getTaskContext();
+        // 1. Dynamically fetch the current question data from the page's state
+        const jq = getJQuery();
+        const $taskState = jq ? jq(document).data('taskState') : null;
+        const taskState = $taskState || (window.taskState ? window.taskState : null);
 
-        if (!ctx.taskState || !ctx.question) {
+        if (!taskState || !taskState.question) {
             uiLog('Task state or question not found. This must run on an active question page.');
             throw new Error('Task state missing');
         }
-        // If this is an exam question, there are no params/ssid/one_id; use qid instead.
-        let payload;
-        if (ctx.isExam) {
-            if (!ctx.question?.qid) {
-                uiLog('Exam question detected but qid missing');
-                throw new Error('qid missing for exam question');
-            }
-            payload = {
-                userAnswer: '1',
-                qid: ctx.question.qid
-            };
-            if (ctx.qnum) payload.qnum = ctx.qnum;
-            if (ctx.aaid) payload.aaid = ctx.aaid;
-            if (ctx.ssid) payload.ssid = ctx.ssid;
-            if (ctx.params) payload.params = ctx.params;
-            if (ctx.question) payload.question = ctx.question;
-        } else {
-            if (!ctx.params) {
-                uiLog('Task params not found. This question type requires params in the submit payload.');
-                throw new Error('Params missing');
-            }
-            if (ctx.ssid && !ctx.oneId) {
-                uiLog('one_id not found. This question type requires one_id when ssid is present.');
-                throw new Error('one_id missing');
-            }
-            // 1. Payload (userAnswer set to "1" as preview)
-            payload = {
-                userAnswer: '1',
-                params: ctx.params,
-                ssid: ctx.ssid,
-                one_id: ctx.oneId
-            };
-        }
+
+        const questionObj = taskState.question;
+
+        // 2. Payload (userAnswer set to "1" as preview)
+        const payload = {
+            userAnswer: '1',
+            params: questionObj.params,
+            ssid: questionObj.subskill ? questionObj.subskill.ssid : undefined,
+            question: questionObj
+        };
 
         uiLog('Sending preview request...');
-        uiLog('Preview payload:', JSON.stringify(payload));
 
-        // 2. Make the fetch request to the server
+        // 3. Make the fetch request to the server
         const response = await fetch('https://www.drfrost.org/api/tasks/submitanswer', {
             method: 'POST',
             headers: {
                 accept: 'application/json, text/javascript, */*; q=0.01',
+                'content-type': 'text/plain;charset=UTF-8',
                 'x-requested-with': 'XMLHttpRequest'
             },
-            referrer: ctx.referrer,
+            referrer: 'https://www.drfrost.org/worksheets.php?wid=new',
             body: JSON.stringify(payload),
             credentials: 'include'
         });
 
         if (!response.ok) {
-            let bodyText = '';
-            try {
-                bodyText = await response.text();
-            } catch (e) {
-                bodyText = '<unable to read body>'; 
-            }
-            uiLog('Preview request failed:', response.status, bodyText);
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
@@ -549,17 +473,11 @@ async function submitAnswer() {
             return null;
         }
 
-        // Validate required fields. Exam questions use `qid` instead of params/ssid/one_id.
         const missing = [];
-        if (ctx.isExam) {
-            if (!ctx.question?.qid) missing.push('qid');
-        } else {
-            if (!ctx.aaid) missing.push('aaid');
-            if (!ctx.qnum) missing.push('qnum');
-            if (!ctx.ssid) missing.push('ssid');
-            if (!ctx.params) missing.push('params');
-            if (ctx.ssid && !ctx.oneId) missing.push('one_id');
-        }
+        if (!ctx.aaid) missing.push('aaid');
+        if (!ctx.qnum) missing.push('qnum');
+        if (!ctx.ssid) missing.push('ssid');
+        if (!ctx.params) missing.push('params');
 
         if (missing.length > 0) {
             uiLog('Unable to submit: missing', missing.join(', '));
@@ -567,45 +485,28 @@ async function submitAnswer() {
         }
 
         const userAnswer = normalizeUserAnswer(lastAnswerRaw);
-        let payload;
-        if (ctx.isExam) {
-            payload = { userAnswer, qid: ctx.question.qid };
-            if (ctx.qnum) payload.qnum = ctx.qnum;
-            if (ctx.aaid) payload.aaid = ctx.aaid;
-            if (ctx.ssid) payload.ssid = ctx.ssid;
-            if (ctx.params) payload.params = ctx.params;
-            if (ctx.question) payload.question = ctx.question;
-        } else {
-            payload = {
-                userAnswer,
-                qnum: ctx.qnum,
-                aaid: ctx.aaid,
-                ssid: ctx.ssid,
-                params: ctx.params,
-                one_id: ctx.oneId
-            };
-        }
+        const payload = {
+            userAnswer,
+            qnum: ctx.qnum,
+            aaid: ctx.aaid,
+            ssid: ctx.ssid,
+            params: ctx.params
+        };
 
         uiLog('Submitting answer...');
-        uiLog('Submit payload:', JSON.stringify(payload));
         const response = await fetch('https://www.drfrost.org/api/tasks/submitanswer', {
             method: 'POST',
             headers: {
                 accept: 'application/json, text/javascript, */*; q=0.01',
+                'content-type': 'text/plain;charset=UTF-8',
                 'x-requested-with': 'XMLHttpRequest'
             },
             referrer: ctx.referrer,
             body: JSON.stringify(payload),
             credentials: 'include'
         });
+
         if (!response.ok) {
-            let bodyText = '';
-            try {
-                bodyText = await response.text();
-            } catch (e) {
-                bodyText = '<unable to read body>';
-            }
-            uiLog('Submit request failed:', response.status, bodyText);
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
