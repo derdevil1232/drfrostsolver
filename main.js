@@ -248,17 +248,22 @@ function formatAnswerText(raw) {
 
 function normalizeArrayAnswer(value) {
     if (Array.isArray(value)) {
-        return value.map(normalizeArrayAnswer);
+        const normalized = value.map(normalizeArrayAnswer);
+        return normalized.length === 1 ? normalized[0] : normalized;
     }
-    if (typeof value === 'number') {
-        return String(value);
+    if (value && typeof value === 'object') {
+        if (Object.prototype.hasOwnProperty.call(value, 'exact')) {
+            return normalizeArrayAnswer(value.exact);
+        }
+        if (Object.prototype.hasOwnProperty.call(value, 'main')) {
+            return normalizeArrayAnswer(value.main);
+        }
     }
     return value;
 }
 
 function normalizeUserAnswer(raw) {
-    if (Array.isArray(raw)) return normalizeArrayAnswer(raw);
-    return raw;
+    return normalizeArrayAnswer(raw);
 }
 
 function getTaskContext() {
