@@ -249,6 +249,7 @@ function formatAnswerText(raw) {
 function normalizeArrayAnswer(value) {
     const isAnswerWrapperObject = value
         && typeof value === 'object'
+        && !Array.isArray(value)
         && (Object.prototype.hasOwnProperty.call(value, 'main')
             || Object.prototype.hasOwnProperty.call(value, 'exact'));
 
