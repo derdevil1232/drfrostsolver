@@ -249,14 +249,20 @@ function formatAnswerText(raw) {
 function normalizeArrayAnswer(value) {
     if (Array.isArray(value)) {
         const normalized = value.map(normalizeArrayAnswer);
-        return normalized.length === 1 ? normalized[0] : normalized;
+        const originalFirst = value[0];
+        const canUnwrapSingle = value.length === 1
+            && originalFirst
+            && typeof originalFirst === 'object'
+            && (Object.prototype.hasOwnProperty.call(originalFirst, 'exact')
+                || Object.prototype.hasOwnProperty.call(originalFirst, 'main'));
+        return canUnwrapSingle ? normalized[0] : normalized;
     }
     if (value && typeof value === 'object') {
-        if (Object.prototype.hasOwnProperty.call(value, 'exact')) {
-            return normalizeArrayAnswer(value.exact);
-        }
         if (Object.prototype.hasOwnProperty.call(value, 'main')) {
             return normalizeArrayAnswer(value.main);
+        }
+        if (Object.prototype.hasOwnProperty.call(value, 'exact')) {
+            return normalizeArrayAnswer(value.exact);
         }
     }
     return value;
