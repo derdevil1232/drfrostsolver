@@ -247,17 +247,20 @@ function formatAnswerText(raw) {
 }
 
 function normalizeArrayAnswer(value) {
+    const isAnswerWrapperObject = value
+        && typeof value === 'object'
+        && (Object.prototype.hasOwnProperty.call(value, 'main')
+            || Object.prototype.hasOwnProperty.call(value, 'exact'));
+
     if (Array.isArray(value)) {
-        const normalized = value.map(normalizeArrayAnswer);
-        const originalFirst = value[0];
-        const canUnwrapSingle = value.length === 1
-            && originalFirst
-            && typeof originalFirst === 'object'
-            && (Object.prototype.hasOwnProperty.call(originalFirst, 'exact')
-                || Object.prototype.hasOwnProperty.call(originalFirst, 'main'));
-        return canUnwrapSingle ? normalized[0] : normalized;
+        if (value.length === 1 && value[0] && typeof value[0] === 'object'
+            && (Object.prototype.hasOwnProperty.call(value[0], 'main')
+                || Object.prototype.hasOwnProperty.call(value[0], 'exact'))) {
+            return normalizeArrayAnswer(value[0]);
+        }
+        return value.map(normalizeArrayAnswer);
     }
-    if (value && typeof value === 'object') {
+    if (isAnswerWrapperObject) {
         if (Object.prototype.hasOwnProperty.call(value, 'main')) {
             return normalizeArrayAnswer(value.main);
         }
