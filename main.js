@@ -247,27 +247,29 @@ function formatAnswerText(raw) {
 }
 
 function normalizeArrayAnswer(value) {
-    const isAnswerWrapperObject = value
-        && typeof value === 'object'
-        && !Array.isArray(value)
-        && (Object.prototype.hasOwnProperty.call(value, 'main')
-            || Object.prototype.hasOwnProperty.call(value, 'exact'));
+    const isAnswerWrapperObject = (candidate) => candidate
+        && typeof candidate === 'object'
+        && !Array.isArray(candidate)
+        && (Object.prototype.hasOwnProperty.call(candidate, 'main')
+            || Object.prototype.hasOwnProperty.call(candidate, 'exact'));
 
     if (Array.isArray(value)) {
-        if (value.length === 1 && value[0] && typeof value[0] === 'object'
-            && (Object.prototype.hasOwnProperty.call(value[0], 'main')
-                || Object.prototype.hasOwnProperty.call(value[0], 'exact'))) {
+        if (value.length === 1 && isAnswerWrapperObject(value[0])) {
             return normalizeArrayAnswer(value[0]);
         }
         return value.map(normalizeArrayAnswer);
     }
-    if (isAnswerWrapperObject) {
-        if (Object.prototype.hasOwnProperty.call(value, 'main')) {
-            return normalizeArrayAnswer(value.main);
+    if (isAnswerWrapperObject(value)) {
+        const hasMain = Object.prototype.hasOwnProperty.call(value, 'main');
+        const hasExact = Object.prototype.hasOwnProperty.call(value, 'exact');
+        const mainValue = hasMain ? value.main : undefined;
+        if (hasMain && mainValue !== undefined && mainValue !== null) {
+            return normalizeArrayAnswer(mainValue);
         }
-        if (Object.prototype.hasOwnProperty.call(value, 'exact')) {
+        if (hasExact) {
             return normalizeArrayAnswer(value.exact);
         }
+        if (hasMain) return normalizeArrayAnswer(mainValue);
     }
     return value;
 }
