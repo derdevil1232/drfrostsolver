@@ -247,18 +247,35 @@ function formatAnswerText(raw) {
 }
 
 function normalizeArrayAnswer(value) {
+    const isAnswerWrapperObject = (candidate) => candidate
+        && typeof candidate === 'object'
+        && !Array.isArray(candidate)
+        && (Object.prototype.hasOwnProperty.call(candidate, 'main')
+            || Object.prototype.hasOwnProperty.call(candidate, 'exact'));
+
     if (Array.isArray(value)) {
+        if (value.length === 1 && isAnswerWrapperObject(value[0])) {
+            return normalizeArrayAnswer(value[0]);
+        }
         return value.map(normalizeArrayAnswer);
     }
-    if (typeof value === 'number') {
-        return String(value);
+    if (isAnswerWrapperObject(value)) {
+        const hasMain = Object.prototype.hasOwnProperty.call(value, 'main');
+        const hasExact = Object.prototype.hasOwnProperty.call(value, 'exact');
+        const mainValue = hasMain ? value.main : undefined;
+        if (hasMain && mainValue !== undefined && mainValue !== null) {
+            return normalizeArrayAnswer(mainValue);
+        }
+        if (hasExact) {
+            return normalizeArrayAnswer(value.exact);
+        }
+        if (hasMain) return normalizeArrayAnswer(mainValue);
     }
     return value;
 }
 
 function normalizeUserAnswer(raw) {
-    if (Array.isArray(raw)) return normalizeArrayAnswer(raw);
-    return raw;
+    return normalizeArrayAnswer(raw);
 }
 
 function getTaskContext() {
